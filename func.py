@@ -52,7 +52,7 @@ def list_compartments(config = {}, **kwargs):
     # OCI API for managing users, groups, compartments, and policies
     try:
         signer = kwargs.get('signer', None)
-        tenancy_id = signer.tenancy_id if signer is not None and 'tenancy_id' in signer else config['tenancy'] if config is not None and 'tenancy' in config else None
+        tenancy_id = signer.tenancy_id if signer is not None else config['tenancy'] if config is not None and 'tenancy' in config else None
         # Returns a list of all compartments and subcompartments in the tenancy (root compartment)
         compartments = client.list_compartments(
             tenancy_id,
