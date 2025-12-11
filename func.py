@@ -27,6 +27,8 @@ def handler(ctx, data: io.BytesIO = None):
     except (Exception, ValueError) as ex:
       print(str(ex), flush=True)
 
+    print("Requested node pool '%s' change size: %d" % (nodepool_id, size))
+
     signer = oci.auth.signers.get_resource_principals_signer()
     resp = get_oke_node_pool(nodepool_id, signer=signer)  # function defined below
     return response.Response(
