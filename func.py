@@ -15,18 +15,17 @@ def handler(ctx, data: io.BytesIO = None):
     try:
       body = json.loads(data.getvalue())
       nodepool_id = body.get("nodepool_id")
+      if nodepool_id is None or nodepool_id == "":
+        raise "Missing nodepool_id parameter"
       size = body.get("size")
+      if size is None or size == "":
+        raise "Missing size parameter"
+      try:
+        size = int(size)
+      except (ValueError) as ex:
+        raise "Invalid size parameter (not an integer)"
     except (Exception, ValueError) as ex:
       print(str(ex), flush=True)
-
-    if nodepool_id is None or nodepool_id == "":
-      raise "Missing nodepool_id parameter"
-    if size is None or size == "":
-      raise "Missing size parameter"
-    try:
-      size = int(size)
-    except (ValueError) as ex:
-      raise "Invalid size parameter (not an integer)"
 
     signer = oci.auth.signers.get_resource_principals_signer()
     resp = list_compartments(signer=signer)  # function defined below
@@ -105,7 +104,7 @@ def list_oke_node_pools(compartment_id, cluster_id, config = {}, **kwargs):
             cluster_id=cluster_id
         )
         # Create a list that holds a list of the node pool id and name next to each other
-        nodepools = [{ "id": n.id, "name": n.name, "size": n.quantity_per_subnet, "object": n } for n in nodepools.data]
+        nodepools = [{ "id": n.id, "name": n.name, "size": n.node_config_details.size, "object": n } for n in nodepools.data]
     except Exception as ex:
         print("ERROR: Cannot access node pools", ex, flush=True)
         raise
