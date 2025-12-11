@@ -12,8 +12,24 @@ from fdk import response
 import oci.identity
 
 def handler(ctx, data: io.BytesIO = None):
+    try:
+      body = json.loads(data.getvalue())
+      nodepool_id = body.get("nodepool_id")
+      size = body.get("size")
+    except (Exception, ValueError) as ex:
+      print(str(ex), flush=True)
+
+    if nodepool_id is None or nodepool_id == "":
+      raise "Missing nodepool_id parameter"
+    if size is None or size == "":
+      raise "Missing size parameter"
+    try:
+      size = int(size)
+    except (ValueError) as ex:
+      raise "Invalid size parameter (not an integer)"
+
     signer = oci.auth.signers.get_resource_principals_signer()
-    resp = list_compartments(signer)  # function defined below
+    resp = list_compartments(signer=signer)  # function defined below
     return response.Response(
         ctx,
         response_data=json.dumps(resp),
@@ -77,4 +93,21 @@ def list_oke_clusters(compartment_id, config = {}, **kwargs):
         print("ERROR: Cannot access clusters", ex, flush=True)
         raise
     resp = {"clusters": clusters}
+    return resp
+
+# List OKE node pools
+def list_oke_node_pools(compartment_id, cluster_id, config = {}, **kwargs):
+    client = oci.container_engine.ContainerEngineClient(config=config, **kwargs)
+    try:
+
+        nodepools = client.list_node_pools(
+            compartment_id,
+            cluster_id=cluster_id
+        )
+        # Create a list that holds a list of the node pool id and name next to each other
+        nodepools = [{ "id": n.id, "name": n.name, "size": n.quantity_per_subnet, "object": n } for n in nodepools.data]
+    except Exception as ex:
+        print("ERROR: Cannot access node pools", ex, flush=True)
+        raise
+    resp = {"nodepools": nodepools}
     return resp
