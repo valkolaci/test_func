@@ -24,3 +24,7 @@ for cluster in clusters["clusters"]:
   nodepools = func.list_oke_node_pools(compartment["id"], cluster["id"], config=config)
   for nodepool in nodepools["nodepools"]:
     print("%s: %s %d" % (nodepool["name"], nodepool["id"], nodepool["size"]))
+
+n = func.get_oke_node_pool("ocid1.nodepool.oc19.eu-frankfurt-2.aaaaaaaarjzfwwc3qunzfuuvltvoogdpdv7begsmoebhusywxnclft6eut5q", config=config)
+nodepool = n["nodepool"]
+print("%s: %s %d" % (nodepool["name"], nodepool["id"], nodepool["size"]))

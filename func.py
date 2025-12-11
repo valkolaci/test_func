@@ -28,7 +28,7 @@ def handler(ctx, data: io.BytesIO = None):
       print(str(ex), flush=True)
 
     signer = oci.auth.signers.get_resource_principals_signer()
-    resp = list_compartments(signer=signer)  # function defined below
+    resp = get_oke_node_pool(nodepool_id, signer=signer)  # function defined below
     return response.Response(
         ctx,
         response_data=json.dumps(resp),
@@ -109,4 +109,20 @@ def list_oke_node_pools(compartment_id, cluster_id, config = {}, **kwargs):
         print("ERROR: Cannot access node pools", ex, flush=True)
         raise
     resp = {"nodepools": nodepools}
+    return resp
+
+# Get OKE node pool
+def get_oke_node_pool(nodepool_id, config = {}, **kwargs):
+    client = oci.container_engine.ContainerEngineClient(config=config, **kwargs)
+    try:
+
+        n = client.get_node_pool(
+            nodepool_id
+        )
+        # Create a list that holds a list of the node pool id and name next to each other
+        nodepool = { "id": n.data.id, "name": n.data.name, "size": n.data.node_config_details.size }
+    except Exception as ex:
+        print("ERROR: Cannot access node pool", ex, flush=True)
+        raise
+    resp = {"nodepool": nodepool}
     return resp
