@@ -5,6 +5,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
 
+import sys
 import io
 import json
 from fdk import response
@@ -12,6 +13,13 @@ import oci.identity
 
 from cfg import Config
 
+# Read and parse configuration
+c = Config.read_config()
+print(c.dump())
+
+sys.exit(1)
+
+# Handle REST calls
 def handler(ctx, data: io.BytesIO = None):
     try:
       body = json.loads(data.getvalue())

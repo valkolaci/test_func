@@ -1,3 +1,4 @@
+timezone: Europe/Budapest
 schedules:
   everyday:
     - start: "0 20 5 * *"
@@ -19,7 +20,7 @@ schedules:
     - start: "0 20 5 * *"
       end: "0 6 1 * *"
       size: 0
-  none: {}
+  none:
 rules:
   - compartment: sandbox/devops
     schedule: everyday
@@ -32,14 +33,10 @@ rules:
 exceptions:
   - comment: Weekend testing
     compartment: sandbox/devops
-    startdate: 2025-12-19
-    starttime: 18:00
-    enddate: 2025-12-22
-    endtime: 06:00
-    size: on
+    start: 2025-12-19 20:00
+    end: 2025-12-22 06:00
+    size: ''
   - comment: Holiday
-    startdate: 2025-12-24
-    starttime: 00:00
-    enddate: 2025-12-28
-    endtime: 00:00
+    start: 2025-12-24 20:00
+    end: 2026-01-05 06:00
     size: 0
